@@ -679,21 +679,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-04-09
+                    2022-04-13
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    540
+                    1.1k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    2 分
+                    4 分
                 </div>
                 
 
@@ -724,7 +724,7 @@
 <p><strong>LinkedList(底层使用了链表的数据结构)，同时实现类List和Queue</strong></p>
 <p><strong>Stack(栈)</strong></p>
 <p><strong>Vector(线程安全)</strong></p>
-<p>[**CopyOnWriteArrayList**](mk:@MSITStore:C:\Users\zxk\Desktop\jdk api 1.8.CHM::/java/util/../../java/util/concurrent/CopyOnWriteArrayList.html)<strong>（可以在遍历集合的同时修改集合中的内容）</strong></p>
+<p>CopyOnWriteArrayList（可以在遍历集合的同时修改集合中的内容）</p>
 <p>2.3 子接口java.util.Queue(队列)的实现类：</p>
 <p><strong>LinkedList(底层使用了链表的数据结构)，同时实现类List和Queue</strong></p>
 <p>2.3 子接口java.util.Set</p>
@@ -744,12 +744,65 @@
 <p><strong><strong>(尤其需要注意ArrayList与Vector线程的区别)</strong></strong></p>
 <h4 id="5-接口Set"><a href="#5-接口Set" class="headerlink" title="5.接口Set"></a>5.接口Set</h4><p>5.1 接口Set集合(无序，不可以重复), 实现类HashSet（hash算法，hash表和hash桶）</p>
 <p><img src="https://wx1.sinaimg.cn/mw2000/007w8iDhgy1h13hjrj7qij30bn03uab8.jpg"></p>
-<ol start="5">
-<li><p>2 java.util.Set的子接口SortedSet（可以排序的Set）–实现类TreeSet</p>
-</li>
-<li><p>3 实现类TreeSet,使用树作为数据结构（二叉树，红黑树）</p>
-</li>
-</ol>
+<p>5.2 java.util.Set的子接口SortedSet（可以排序的Set）–实现类TreeSet</p>
+<p>5.3 实现类TreeSet,使用树作为数据结构（二叉树，红黑树）</p>
+<h4 id="6-工具类Collections的排序方法sort-实现List集合的排序"><a href="#6-工具类Collections的排序方法sort-实现List集合的排序" class="headerlink" title="6.工具类Collections的排序方法sort()实现List集合的排序"></a>6.工具类Collections的排序方法sort()实现List集合的排序</h4><p><strong>第一个sort方法要求排序的类要实现Comparable接口</strong></p>
+<p><img src="https://wx4.sinaimg.cn/mw2000/007w8iDhgy1h17bqdckl1j30z206xdjn.jpg"></p>
+<p>从api中看到参数为list集合，不能为set集合</p>
+<p><img src="https://wx3.sinaimg.cn/mw2000/007w8iDhgy1h17bqdp3ebj30md080jue.jpg"></p>
+<p>在排序中使用泛型：</p>
+<p><img src="https://wx1.sinaimg.cn/mw2000/007w8iDhgy1h17bqdw6phj30wf0mkwp3.jpg"></p>
+<p><strong>第二个sort方法要求排序的创建比较器类，要实现Comparator接口</strong></p>
+<p><img src="https://wx4.sinaimg.cn/mw2000/007w8iDhgy1h17bqe1iy0j30yl06jtcc.jpg"></p>
+<p><img src="https://wx4.sinaimg.cn/mw2000/007w8iDhgy1h17bqe8xjmj30ru0b0jvt.jpg"></p>
+<p>排序中使用泛型：</p>
+<p><img src="https://wx3.sinaimg.cn/mw2000/007w8iDhgy1h17bqfcnnhj319h0fpdp4.jpg"></p>
+<h4 id="7-泛型模板设计"><a href="#7-泛型模板设计" class="headerlink" title="7.泛型模板设计"></a>7.泛型模板设计</h4><p>`package com.xja.test;</p>
+<p>import java.util.ArrayList;<br>import java.util.List;</p>
+<p><em>/</em>** </p>
+<p> **手工分页 需要设计一个类PageBean ,泛型的模板设计List<E>add(E e)  Comparable<T>compareTo(T o)             Comparator<T> <em>compare(T o1, T o2)</em></p>
+<p>** T为占位置的东西，没有任何的含义，也可以写*<em>E</em></p>
+<p>**/*</p>
+<p>public class PageBean<T> {</p>
+<p>​    //T-&gt;Student  T-&gt;Teacher T-&gt;Book*    </p>
+<p>​    private int rowCount;*//*<em>总行数</em>    </p>
+<p>​    private int pageSize = 5;*//*<em>每页显示的条数</em>    </p>
+<p>​    private int page;*//*<em>页码</em> <em>1,2,3</em></p>
+<p>​    <em>//当前页的数据  mysql的语法 limit  page，pageSize-pageSize,pageSize获取对当前页的数据</em></p>
+<p>​    <em>//list集合又可以能为tudent分页，也可以为Teacher分页,如果使用下面的设计，不利于扩展</em></p>
+<p>   <em>//private List<Student> list1;</em></p>
+<p>  <em>//private List<Teacher> list2;</em>    </p>
+<p> <em>//private List<Book> list3;</em>  </p>
+<p> <em>//使用泛型模板的设计，可以提高程序的通用性</em></p>
+<p>private List<T> list;<em>//List<Student>  List<Teacher> List<Book></em>    </p>
+<p>public static void main(String[] args) {<br>        PageBean<Student> studentPageBean = new PageBean&lt;&gt;(); *//*<em>模拟从数据库获取的数据</em>        </p>
+<p>​        List<Student> students = new ArrayList&lt;&gt;();</p>
+<p>​        students.add(new Student(“s001”,”zs”,20));*//*<em>第一页的数据</em>        </p>
+<p>​        studentPageBean.list = students;</p>
+<p>​        PageBean<Teacher> teacherPageBean = new PageBean&lt;&gt;();<br>​        *//*<em>模拟从数据库获取的数据</em>        </p>
+<p>​        List<Teacher> teachers = new ArrayList&lt;&gt;();<br>​        teachers.add(new Teacher(“t001”,”zs”));*//*<em>第一页的数据</em>        </p>
+<p>​        teacherPageBean.list = teachers;<br>​    }<br>}`</p>
+<p><strong>泛型中的泛型通配符 ？和 ？extends T和 ？super T</strong></p>
+<p>`</p>
+<p>import java.util.ArrayList;<br>import java.util.List;</p>
+<p>public class TestExtends {<br>    public static void main(String[] args) {<br>        <em>//Object<strong>泛型</strong>objectList<strong>可以保存</strong>Object**的所有子类的类型</em>        List<Object> objectList = new ArrayList&lt;&gt;();<br>        objectList.add(“hello”);<br>        objectList.add(new Integer(10));<br>        objectList.add(new Double(10.5));</p>
+<p>   <em>//Number</em> <em>是</em>  <em>Byte</em> <em>，</em> <em>Double</em> <em>，</em>  <em>Float</em> <em>，</em> <em>Integer</em> <em>，</em> <em>Long</em> <em>，</em> <em>Short</em> <em>的父类</em>        List<Number> numberList = new ArrayList&lt;&gt;();<br>        numberList.add(new Double(10.5));<br>        numberList.add(new Integer(20));</p>
+<p>​        List<Integer> integerList = new ArrayList&lt;&gt;();<br>​        integerList.add(new Integer(10));<br>​        integerList.add(new Integer(20));</p>
+<p>​        List<Double> doubleList = new ArrayList&lt;&gt;();<br>​        doubleList.add(new Double(10.5));<br>​        doubleList.add(new Double(20.5));</p>
+<p>​         <em>//printCollection1(objectList);</em>        </p>
+<p>​         <em>//printCollection(numberList);</em>       </p>
+<p>​         <em>//printCollection(integerList);</em>        </p>
+<p>​        *//*<em>？</em> <em>extends Number  ?泛型通配符的类型可以是Number的子类和Number本身</em></p>
+<p>​     <em>printCollection2</em>(integerList);<em>//Number**的子类</em>        </p>
+<p>​    <em>printCollection2</em>(doubleList);<em>//Number**的子类</em>        </p>
+<p>   <em>printCollection2</em>(numberList);<em>//Number**自己</em>        </p>
+<p><em>//printCollection2(objectList);//Number<strong>的父类</strong>Object**错误</em>       </p>
+<p> *//<strong>？* <em>super Number</em> *泛型通配符和</strong>super ?<strong>泛型通配符的类型可以是</strong>Number<strong>的父类和</strong>Number<strong>本身*        <em>printCollection3</em>(numberList);*//Number</strong>自己*        </p>
+<p><em>//printCollection3(integerList);Number**的子类错误</em>       </p>
+<p> <em>//printCollection3(doubleList);Number**的子类错误</em>       </p>
+<p> <em>printCollection3</em>(objectList);<em>//Number<strong>的父类</strong>Object</em>   </p>
+<p>}</p>
+<p>`</p>
 
                 
             </div>
@@ -1731,7 +1784,7 @@ new Valine({
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">19.9k</span>&nbsp;字
+                class="white-color">20.5k</span>&nbsp;字
             
             
             
